@@ -1,0 +1,27 @@
+adv_content_reminder.settings:
+  path: '/admin/config/content/adv-content-reminder'
+  defaults:
+    _form: '\Drupal\adv_content_reminder\Form\ReminderContentTypesForm'
+    _title: 'Advanced Content Reminder'
+  requirements:
+    _permission: 'administer advanced content reminder'
+  options:
+    _admin_route: TRUE
+
+
+adv_content_reminder.emails:
+  path: '/admin/config/content/adv-content-reminder/emails'
+  defaults:
+    _form: '\Drupal\adv_content_reminder\Form\ReminderEmailTemplatesForm'
+    _title: 'Email Templates'
+  requirements:
+    _permission: 'administer advanced content reminder'
+
+
+adv_content_reminder.test_email:
+  path: '/admin/config/content/adv-content-reminder/test-email'
+  defaults:
+    _form: '\Drupal\adv_content_reminder\Form\ReminderTestEmailForm'
+    _title: 'Send Test Reminder Email'
+  requirements:
+    _permission: 'send test reminder emails'

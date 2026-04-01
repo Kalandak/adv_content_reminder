@@ -1,0 +1,11 @@
+name: 'Advanced Content Reminder Expiration Date'
+type: module
+description: 'Provides policy-driven expiration management for nodes. Creates field_expiration_date storage and automatically maintains expiration based on <em>updated date</em> + <em>configurable interval</em>.'
+package: 'Content Reminder'
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - drupal:node
+  - adv_content_reminder:adv_content_reminder
+
+configure: adv_content_reminder.settings

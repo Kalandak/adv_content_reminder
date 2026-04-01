@@ -1,0 +1,10 @@
+admin_ui:
+  version: 1.x
+  js:
+    js/reminder-admin.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once
+    - core/drupal.dialog
+    - core/drupal.ajax

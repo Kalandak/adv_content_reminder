@@ -1,0 +1,10 @@
+adv_content_reminder_expiration.settings:
+  type: config_object
+  label: 'Advanced Content Reminder Expiration settings'
+  mapping:
+    interval_value:
+      type: integer
+      label: 'Expiration interval value'
+    interval_unit:
+      type: string
+      label: 'Expiration interval unit'

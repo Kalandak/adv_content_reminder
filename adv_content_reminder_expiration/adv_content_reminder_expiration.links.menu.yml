@@ -1,0 +1,6 @@
+adv_content_reminder_expiration.settings:
+  title: 'Advanced Content Reminder Expiration'
+  description: 'Configure expiration interval and recalculate expiration dates.'
+  route_name: adv_content_reminder_expiration.settings
+  parent: system.admin_config_content
+  weight: 50

@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @file
+ * Core hooks for the Advanced Content Reminder module.
+ */
+
+use Drupal\Core\Mail\MailFormatHelper;
+
+/**
+ * Implements hook_cron().
+ *
+ * Delegates reminder processing to the ReminderManager service.
+ */
+function adv_content_reminder_cron() {
+
+  /** @var \Drupal\adv_content_reminder\Service\ReminderManager $manager */
+  $manager = \Drupal::service('adv_content_reminder.manager');
+
+  // New service entry point (refactored).
+  $manager->processAll();
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Handles reminder and test email sending.
+ */
+function adv_content_reminder_mail($key, &$message, $params) {
+
+  switch ($key) {
+
+    /*
+     * --------------------------------------------------------
+     * Expiration Reminder Email
+     * --------------------------------------------------------
+     */
+    case 'expiration_reminder':
+
+      // Subject is already token-processed by ReminderMailBuilder service.
+      $message['subject'] = $params['subject'];
+
+      // Ensure proper formatting (plain text safe).
+      $message['body'][] = MailFormatHelper::htmlToText($params['body']);
+
+      break;
+
+    /*
+     * --------------------------------------------------------
+     * Test Email
+     * --------------------------------------------------------
+     */
+    case 'test_email':
+
+      // Subject is already token-processed.
+      $message['subject'] = $params['subject'];
+
+      $message['body'][] = MailFormatHelper::htmlToText($params['body']);
+
+      // Explicit from address.
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+
+      break;
+  }
+}

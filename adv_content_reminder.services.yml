@@ -1,0 +1,36 @@
+services:
+  adv_content_reminder.manager:
+    class: Drupal\adv_content_reminder\Service\ReminderManager
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@queue'
+      - '@logger.factory'
+      - '@datetime.time'
+      - '@adv_content_reminder.reminder_mail_builder'
+      - '@adv_content_reminder.evaluator'
+
+  # Register custom logger channel
+  logger.channel.adv_content_reminder:
+    parent: logger.channel_base
+    arguments: ['adv_content_reminder']
+
+  adv_content_reminder.reminder_mail_builder:
+    class: Drupal\adv_content_reminder\Service\ReminderMailBuilder
+    arguments:
+      - '@token'
+      - '@plugin.manager.mail'
+      - '@entity_type.manager'
+      - '@entity.repository'
+      - '@config.factory'
+      - '@logger.channel.adv_content_reminder'
+
+  adv_content_reminder.evaluator:
+    class: Drupal\adv_content_reminder\Service\ReminderEvaluator
+    arguments:
+      - '@config.factory'
+
+    adv_content_reminder.recipient_resolver:
+      class: Drupal\adv_content_reminder\Service\RecipientResolver
+      arguments:
+        - '@config.factory'

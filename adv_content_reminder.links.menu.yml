@@ -1,0 +1,6 @@
+adv_content_reminder.settings:
+  title: 'Advanced Content Reminder'
+  description: 'Configure monitored content types and expiration reminder email templates.'
+  route_name: adv_content_reminder.settings
+  parent: system.admin_config_content
+  weight: 100

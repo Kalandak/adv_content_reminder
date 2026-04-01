@@ -1,0 +1,12 @@
+name: Advanced Content Reminder
+type: module
+description: 'Provides policy-driven expiration management for nodes. Sends automated expiration reminders based on expiration date.'
+core_version_requirement: ^10 || ^11
+package: 'Content Reminder'
+dependencies:
+  - drupal:node
+  - drupal:user
+  - drupal:datetime
+  - drupal:token
+
+configure: adv_content_reminder.settings

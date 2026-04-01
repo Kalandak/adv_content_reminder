@@ -1,0 +1,9 @@
+adv_content_reminder_expiration.settings:
+  path: '/admin/config/content/adv-content-expiration'
+  defaults:
+    _form: '\Drupal\adv_content_reminder_expiration\Form\ExpirationSettingsForm'
+    _title: 'Advanced Content Reminder Expiration Settings'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE

@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Provides policy-driven expiration handling for nodes.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * Automatically recalculates expiration date when content is saved.
+ * Policy: Expiration = Updated date + configured interval.
+ */
+function adv_content_reminder_expiration_entity_presave(EntityInterface $entity) {
+
+  // Only apply to nodes.
+  if (!$entity instanceof NodeInterface) {
+    return;
+  }
+
+  // Only apply if the bundle actually has the field attached.
+  if (!$entity->hasField('field_expiration_date')) {
+    return;
+  }
+
+  // If field is not attached to this bundle, skip.
+  if ($entity->getFieldDefinition('field_expiration_date')->getTargetBundle() !== $entity->bundle()) {
+    return;
+  }
+
+  /** @var \Drupal\adv_content_reminder_expiration\Service\ExpirationManager $manager */
+  $manager = \Drupal::service('adv_content_reminder_expiration.expiration_manager');
+
+  // Calculate expiration date based on policy.
+  $expiration_date = $manager->calculateExpirationDate($entity);
+
+  if ($expiration_date) {
+    $entity->set('field_expiration_date', $expiration_date);
+
+    \Drupal::logger('adv_content_reminder_expiration')->debug(
+      'Expiration recalculated for node @nid (@type). New expiration: @date',
+      [
+        '@nid' => $entity->id() ?: 'new',
+        '@type' => $entity->bundle(),
+        '@date' => $expiration_date,
+      ]
+    );
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function content_adv_reminder_expiration_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  if (isset($form['#node']) && $form['#node'] instanceof NodeInterface) {
+
+    if (isset($form['field_expiration_date']['widget'][0]['value'])) {
+
+      // Make field read-only in UI.
+      $form['field_expiration_date']['widget'][0]['value']['#attributes']['readonly'] = 'readonly';
+
+      // Optional description for clarity.
+      $form['field_expiration_date']['#description'] = t('This field is automatically managed by the system and cannot be edited.');
+    }
+  }
+}

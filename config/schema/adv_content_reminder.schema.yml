@@ -1,0 +1,41 @@
+adv_content_reminder.settings:
+  type: config_object
+  label: 'Advanced Content Reminder settings'
+  mapping:
+
+    monitored_content_types:
+      type: sequence
+      label: 'Monitored content types'
+      sequence:
+        type: string
+
+    email_templates:
+      type: sequence
+      label: 'Reminder email templates'
+      sequence:
+        type: mapping
+        label: 'Email template'
+        mapping:
+
+          label:
+            type: string
+            label: 'Template label'
+
+          offset:
+            type: integer
+            label: 'Days relative to expiration'
+
+          subject:
+            type: string
+            label: 'Email subject'
+
+          body:
+            type: text_format
+            label: 'Email body'
+
+    additional_emails:
+      type: sequence
+      label: 'Additional notification emails'
+      sequence:
+        type: email
+        label: 'Email address'

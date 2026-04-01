@@ -1,0 +1,11 @@
+monitored_content_types: []
+
+email_templates:
+  - label: '30 Day Reminder'
+    offset: -30
+    subject: 'Reminder: [node:title] expires in 30 days'
+    body:
+      value: 'The content titled [node:title] will expire in 30 days.'
+      format: basic_html
+
+additional_emails: []

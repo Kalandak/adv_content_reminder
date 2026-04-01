@@ -1,0 +1,17 @@
+adv_content_reminder.settings_tab:
+  route_name: adv_content_reminder.settings
+  title: 'Content Types'
+  base_route: adv_content_reminder.settings
+  weight: 0
+
+adv_content_reminder.emails_tab:
+  route_name: adv_content_reminder.emails
+  title: 'Email Templates'
+  base_route: adv_content_reminder.settings
+  weight: 10
+
+adv_content_reminder.test_email_tab:
+  route_name: adv_content_reminder.test_email
+  title: 'Send Test Email'
+  base_route: adv_content_reminder.settings
+  weight: 20

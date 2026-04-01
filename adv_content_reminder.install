@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall hooks for
+ * adv_content_reminder.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function adv_content_reminder_install() {
+
+  $config = \Drupal::configFactory()
+    ->getEditable('adv_content_reminder.settings');
+
+  // Initialize config structure.
+  $config->set('monitored_content_types', []);
+
+  $config->set('email_templates', [
+    'days_30' => [
+      'subject' => 'Reminder: [node:title] expires in 30 days',
+      'body' => [
+        'value' => '<p>The content titled <strong>[node:title]</strong> will expire in 30 days.</p>',
+        'format' => 'basic_html',
+      ],
+    ],
+    'days_5' => [
+      'subject' => 'Reminder: [node:title] expires in 5 days',
+      'body' => [
+        'value' => '<p>The content titled <strong>[node:title]</strong> will expire in 5 days.</p>',
+        'format' => 'basic_html',
+      ],
+    ],
+    'day_0' => [
+      'subject' => 'Expiration Notice: [node:title] expires today',
+      'body' => [
+        'value' => '<p>The content titled <strong>[node:title]</strong> expires today.</p>',
+        'format' => 'basic_html',
+      ],
+    ],
+  ]);
+
+  $config->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function adv_content_reminder_uninstall() {
+
+  // Remove module configuration.
+  \Drupal::configFactory()
+    ->getEditable('adv_content_reminder.settings')
+    ->delete();
+}

@@ -1,0 +1,8 @@
+administer advanced content reminder:
+  title: 'Administer Advanced Content Reminder'
+  description: 'Configure reminder settings, email templates, and monitored content types.'
+  restrict access: true
+
+send test reminder emails:
+  title: 'Send test reminder emails'
+  description: 'Allows users to send test reminder emails.'
