@@ -1,0 +1,9 @@
+{
+  "name": "designsnsuch/adv_content_reminder",
+  "description": "Provides policy-driven expiration management for nodes. Sends automated expiration reminders based on expiration date.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": "^8.1"
+  }
+}
