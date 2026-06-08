@@ -188,6 +188,8 @@ class ReminderManager {
     $config = $this->getConfig();
     $templates = $config->get('email_templates') ?? [];
 
+    $monitored_types = $config->get('monitored_content_types') ?? [];
+
     $template = NULL;
 
     foreach ($templates as $t) {
@@ -206,12 +208,52 @@ class ReminderManager {
       return;
     }
 
-    // Load a sample node for token replacement.
+    // Query the latest published node from monitored content types.
+    $node_query = $this->entityTypeManager
+      ->getStorage('node')
+      ->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 1)
+      ->range(0, 1)
+      ->sort('nid', 'DESC');
+
+    // Restrict the query to configured monitored content types.
+    if (!empty($monitored_types)) {
+      $node_query->condition('type', $monitored_types, 'IN');
+    }
+
+    // Execute the query and retrieve the node IDs.
+    $nids = $node_query->execute();
+
+    // Get the first matching node ID.
+    $nid = reset($nids);
+
+    // Log a warning if no eligible node was found.
+    if (!$nid) {
+      $this->loggerFactory
+        ->get('adv_content_reminder')
+        ->warning(
+          'Test email could not be generated because no published monitored nodes were found.'
+        );
+
+      return;
+    }
+
+    // Load the sample node used for token replacement in test emails.
     $node = $this->entityTypeManager
       ->getStorage('node')
-      ->load(1);
+      ->load($nid);
 
+    // Log a warning if the node could not be loaded successfully.
     if (!$node instanceof NodeInterface) {
+      $this->loggerFactory
+        ->get('adv_content_reminder')
+        ->warning(
+          'Unable to generate test email because the selected sample node (ID: @nid) does not exist or is inaccessible.',
+          [
+            '@nid' => $nid,
+          ]
+        );
       return;
     }
 

@@ -32,17 +32,30 @@ class ReminderEmailTemplatesForm extends ConfigFormBase {
     $form['#tree'] = TRUE;
 
     $config = $this->config('adv_content_reminder.settings');
-    $templates = $config->get('email_templates') ?? [];
 
-    // Use updated templates from form state (after remove).
-    $templates = $form_state->get('templates') ?? $templates;
+    // Prioritize templates stored in form state during AJAX rebuilds.
+    // This ensures the form uses the latest modified template data
+    $templates = $form_state->get('templates');
 
-    // Determine count.
-    $count = $form_state->get('template_count');
-    if ($count === NULL) {
-      $count = max(count($templates), 1);
-      $form_state->set('template_count', $count);
+    if ($templates === NULL) {
+      // Initialize templates from saved configuration on first load.
+      $templates = $config->get('email_templates') ?? [];
+
+      // Persist templates in form state for subsequent rebuild cycles.
+      $form_state->set('templates', $templates);
     }
+
+    // Retrieve current template count from form state.
+    // Falls back to the current template array count on initial build.
+    $count = $form_state->get('template_count') ?? count($templates);
+
+    // Ensure at least one template container is always rendered.
+    if ($count < 1) {
+      $count = 1;
+    }
+
+    // Persist the updated template count for AJAX rebuild handling.
+    $form_state->set('template_count', $count);
 
     // Wrapper for AJAX.
     $form['templates_wrapper'] = [
@@ -136,11 +149,24 @@ class ReminderEmailTemplatesForm extends ConfigFormBase {
    * Remove one template.
    */
   public function removeOne(array &$form, FormStateInterface $form_state): void {
-
     $trigger = $form_state->getTriggeringElement();
     $remove_index = $trigger['#template_index'];
 
-    $templates = $form_state->getValue(['templates_wrapper', 'templates']) ?? [];
+    // Retrieve templates from persistent form state storage first.
+    // This ensures AJAX rebuilds use the latest modified template data.
+    $templates = $form_state->get('templates');
+    
+    if ($templates === NULL) {
+      // Fall back to raw user input when form state storage
+      // is not yet initialized.
+      //
+      // Avoid using getValue() here because validated form
+      // values may be incomplete or empty during AJAX requests
+      // using #limit_validation_errors.
+      $input = $form_state->getUserInput();
+
+      $templates = $input['templates_wrapper']['templates'] ?? [];
+    }
 
     // Prevent removing last template.
     if (count($templates) <= 1) {
@@ -148,15 +174,28 @@ class ReminderEmailTemplatesForm extends ConfigFormBase {
       return;
     }
 
-    // Remove selected template.
+    // Remove the selected index.
     unset($templates[$remove_index]);
 
     // Reindex.
     $templates = array_values($templates);
 
-    $form_state->setValue(['templates_wrapper', 'templates'], $templates);
+    // Update Form State storage for the next build cycle.
     $form_state->set('templates', $templates);
     $form_state->set('template_count', count($templates));
+
+    // Clear stale template values from raw user input before rebuild.
+    //
+    // Drupal Form API may reuse submitted POST data during AJAX rebuilds,
+    // which can cause removed templates to reappear in the rebuilt form.
+    //
+    // Removing the stale input ensures the rebuild uses the updated
+    // template data stored in form state.
+    $input = &$form_state->getUserInput();
+    
+    if (isset($input['templates_wrapper']['templates'])) {
+      unset($input['templates_wrapper']['templates']);
+    }
 
     $form_state->setRebuild(TRUE);
   }

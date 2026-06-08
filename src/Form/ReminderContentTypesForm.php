@@ -67,7 +67,7 @@ class ReminderContentTypesForm extends ConfigFormBase {
         <p><strong>Note:</strong></p>
         <ul>
           <li>The Advanced Content Reminder Expiration module must be installed & set up.</li>
-          <li>This module only works if <code>field_expiration</code> is present on the node type.</li>
+          <li>This module only works if <code>field_expiration_date</code> is present on the node type.</li>
         </ul>
         </div>
       ',
